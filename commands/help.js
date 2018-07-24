@@ -9,7 +9,7 @@ exports.run = (client, config, message, args) => {
         name: client.user.username,
         icon_url: client.user.avatarURL
       },
-      title: "Chronus Command Guide",
+      title: "Style Transfer Bot Command Guide",
       url: "http://google.com",
       description: "Chronus is a simple bot to help you keep your discord friends accountable for going to sleep on time...",
       fields: [{
@@ -21,7 +21,7 @@ exports.run = (client, config, message, args) => {
         value: ".",
       },
       {
-        name: "!getzone @username",
+        name: "@styletransfer please give me \"moutains\" in the style of \"starry night\"",
         value: "Get the timezone for the mentioned user."
       },
       {

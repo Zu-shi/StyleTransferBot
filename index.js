@@ -29,23 +29,28 @@ client.on("message", message => {
   */
   
   if (message.author.bot) return;
-  if (message.content.indexOf(config.prefix) !== 0) return;
-  if (message.content[1] === config.prefix) return; // avoid doing anything when someone is excited
 
-  // This is the best way to define args. Trust me.
-  const args = message.content.slice(config.prefix.length).trim().split(/ +/g);
-  const command = args.shift().toLowerCase();
+  // First need to check if there is a mention
+  if (message.mentions.members.first() == undefined) {
+    return;
+  } else {
+    // run command if starting with @botname (ID for styletransfer is 471110404991614989)
+    if (message.mentions.members.first().id==471110404991614989) {
+      const args = message.content.trim().split(/ +/g);
 
-  // The list of if/else is replaced with those simple 2 lines:
-  try {
-  	// Run the command
-    let commandFile = require(`./commands/${command}.js`);
-    commandFile.run(client, config, message, args);
-  } catch (err) {
-  	// Throw an error
-  	// message.channel.send('Please enter a valid command (see @help chronus)');
-    // console.error(err);
+      // Help Command
+      if (message.content.trim().split(/ +/g)[1] == 'help') {
+        let commandFile = require(`./commands/help.js`);
+        commandFile.run(client, config, message, args);
+      } else {
+        let commandFile = require(`./commands/getimage.js`);
+        commandFile.run(client, config, message, args);
+      }
+    } else {
+      return; // prevent bot from doing anything if not mentioned
+    }
   }
+    
 });
 
 client.login(config.token);

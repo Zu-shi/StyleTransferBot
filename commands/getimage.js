@@ -1,4 +1,4 @@
-exports.run = (client, config, message, args) => {
+exports.run = (client, config, message, args_full) => {
 
     // TO DO:
     // 1) Return the actual image through discord (text sufficient?)
@@ -7,11 +7,57 @@ exports.run = (client, config, message, args) => {
     // 4) Allow bot to recognize conversation without prefix
     //      e.g.) "I'd like flowers in the style of Monet"
     //      e.g.) "I'd like Cactus in the style of Final Fantasy"
+    // 5) Make numOfResults from input argument again (just an int), also imageToDL
 
-    // ARGS
+    // ARGS (old)
     // [0]: search key term
     // [1]: number of images you want returned
     // Example: !getimage flower 5
+
+    // ARGS (now)
+    // [0]: search key term(s) for object
+    // [1]: search key term(s) for style
+    // Example: @styletransfer please paint me some "flowers" in the style of "rembrandt"
+
+    // Parse arguments from input sentence
+    // You will want to take in the words surrounded by quotes
+    // pseudocode: in args_full, if start with ' or ", take as first word in args[0]
+    //             in args_full, if end with ' or ", take as last work in args[0]
+    //             do same for args[1], where args[0] = object, args[1] = style
+    let startQuote = false;
+    var args = [];
+    var arg_cnt = 0;
+
+    for (i=0; i<args_full.length; i++) {
+        word = args_full[i];
+        if (word[0] == '\'' || word[0] == '\"') {
+            // If just single word (does not span multiple)
+            if (word[word.length-1] == '\'' || word[word.length-1] == '\"') {
+                args[arg_cnt] = word.substr(1);
+                args[arg_cnt] = args[arg_cnt].substr(0, args[arg_cnt].length-1);
+                arg_cnt++;
+            } else {
+                args[arg_cnt] = word.substr(1); // take off first character (quote)
+                startQuote = true;
+            }
+            
+        } else if (word[word.length-1] == '\'' || word[word.length-1] == '\"') {
+            // ends in quote, close
+            args[arg_cnt] = args[arg_cnt] + ' ' + word.substr(0,word.length-1);
+            arg_cnt++;
+        } else {
+            // If still within quotes, append words and spaces
+            if (startQuote == true) {
+                args[arg_cnt] = args[arg_cnt] + ' ' + word;
+            }
+
+            // Else, skip over to next word
+        }
+    }
+    // If there are no arguments
+    if (arg_cnt == 0) {
+        return;
+    }
 
     // Bing Image Search API
     // Follow https://docs.microsoft.com/en-us/azure/cognitive-services/bing-image-search/quickstarts/nodejs
@@ -27,8 +73,11 @@ exports.run = (client, config, message, args) => {
     let path = '/bing/v7.0/images/search';
 
     // Let user know command went in
-    message.channel.send('Searching for args[0]: ' + args[0] + ' original art')
-    let term = args[0] + ' original art';
+    message.channel.send('Searching for ' + args[0] + ' and ' + args[1] + ' original art');
+    let term_subject = args[0];
+    let term_style = args[1] + ' original art';
+
+    var isStyle = false;
 
     // Get results in JSON format
     let response_handler = function (response) {
@@ -39,7 +88,7 @@ exports.run = (client, config, message, args) => {
         response.on('end', function () {
             // Store into JSON for easy access
             let results = JSON.parse(body);
-            let numOfResults = args[1];
+            let numOfResults = 1;
             let imageUrl = [];
             for (var i = 0; i < numOfResults; i++)
                 imageUrl[i] = results.value[i].contentUrl
@@ -54,15 +103,19 @@ exports.run = (client, config, message, args) => {
 
             var download = function(uri, filename, callback){
             request.head(uri, function(err, res, body){
-                console.log('content-type:', res.headers['content-type']);
-                console.log('content-length:', res.headers['content-length']);
-
                 request(uri).pipe(fs.createWriteStream(filename)).on('close', callback);
             });
             };
 
             let imageToDL = 0;
-            download(imageUrl[imageToDL], 'style_base.jpg', function(){
+            if (isStyle == false) {
+                var save_file = 'subject.jpg';
+                isStyle = true;
+            } else {
+                var save_file = 'style_base.jpg'
+                isStyle = false;
+            }
+            download(imageUrl[imageToDL], save_file, function(){
             console.log('done');
             });
         });
@@ -73,7 +126,6 @@ exports.run = (client, config, message, args) => {
     };
 
     let bing_image_search = function (search) {
-    console.log('Searching images for: ' + term);
     let request_params = {
             method : 'GET',
             hostname : host,
@@ -88,10 +140,13 @@ exports.run = (client, config, message, args) => {
     }
 
     if (subscriptionKey.length === 32) {
-        bing_image_search(term);
+        bing_image_search(term_subject);
+        bing_image_search(term_style);
     } else {
         console.log('Invalid Bing Search API subscription key!');
         console.log('Please paste yours into the source code.');
     }
+
+    return;
 
 }
