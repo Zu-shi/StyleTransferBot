@@ -1,7 +1,7 @@
 exports.run = (client, config, message, args) => {
 
     // TO DO:
-    // 1) Return the actual image through discord
+    // 1) Return the actual image through discord (text sufficient?)
     // 2) Allow for multi-word input
     // 3) Figure out which image to select of first few results
     // 4) Allow bot to recognize conversation without prefix
