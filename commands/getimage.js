@@ -1,21 +1,22 @@
 exports.run = (client, config, message, args) => {
 
     // TO DO:
-    // 1) Get basic Bing Image Search API provided code to work
-    // 2) Return the image URL as text through discord
-    // 3) Return the actual image through discord
-    // 4) Allow for multi-word input
+    // 1) Return the actual image through discord
+    // 2) Allow for multi-word input
+    // 3) Figure out which image to select of first few results
+    // 4) Allow bot to recognize conversation without prefix
+    //      e.g.) "I'd like flowers in the style of Monet"
+    //      e.g.) "I'd like Cactus in the style of Final Fantasy"
+
+    // ARGS
+    // [0]: search key term
+    // [1]: number of images you want returned
+    // Example: !getimage flower 5
 
     // Bing Image Search API
     // Follow https://docs.microsoft.com/en-us/azure/cognitive-services/bing-image-search/quickstarts/nodejs
     'use strict';
     let https = require('https');
-
-    // **********************************************
-    // *** Update or verify the following values. ***
-    // **********************************************
-
-    // Replace the subscriptionKey string value with your valid subscription key.
     let subscriptionKey = config.BingSearchAPIsubscriptionKey;
 
     // Verify the endpoint URI.  At this writing, only one endpoint is used for Bing
@@ -25,25 +26,47 @@ exports.run = (client, config, message, args) => {
     let host = 'api.cognitive.microsoft.com';
     let path = '/bing/v7.0/images/search';
 
-    message.channel.send('Args: ' + args)
-    message.channel.send('Searching for args[0]: ' + args[0])
-    let term = args[0] + ' original art'; // CHECK how to concatenate strings in js
+    // Let user know command went in
+    message.channel.send('Searching for args[0]: ' + args[0] + ' original art')
+    let term = args[0] + ' original art';
 
+    // Get results in JSON format
     let response_handler = function (response) {
         let body = '';
         response.on('data', function (d) {
             body += d;
         });
         response.on('end', function () {
-            console.log('\nRelevant Headers:\n');
-            for (var header in response.headers)
-                // header keys are lower-cased by Node.js
-                if (header.startsWith("bingapis-") || header.startsWith("x-msedge-"))
-                    console.log(header + ": " + response.headers[header]);
-            body = JSON.stringify(JSON.parse(body), null, '  ');
-            console.log('\nJSON Response:\n');
-            console.log(body);
+            // Store into JSON for easy access
+            let results = JSON.parse(body);
+            let numOfResults = args[1];
+            let imageUrl = [];
+            for (var i = 0; i < numOfResults; i++)
+                imageUrl[i] = results.value[i].contentUrl
+
+            // Send back to discord as text (for now)
+            for (var i = 0; i < numOfResults; i++)
+                message.channel.send(imageUrl[i])
+
+            // Download to local
+            var fs = require('fs'),
+            request = require('request');
+
+            var download = function(uri, filename, callback){
+            request.head(uri, function(err, res, body){
+                console.log('content-type:', res.headers['content-type']);
+                console.log('content-length:', res.headers['content-length']);
+
+                request(uri).pipe(fs.createWriteStream(filename)).on('close', callback);
+            });
+            };
+
+            let imageToDL = 0;
+            download(imageUrl[imageToDL], 'style_base.jpg', function(){
+            console.log('done');
+            });
         });
+
         response.on('error', function (e) {
             console.log('Error: ' + e.message);
         });
