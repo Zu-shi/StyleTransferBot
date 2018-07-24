@@ -1,12 +1,7 @@
 exports.run = (client, config, message, args) => {
 
     // TO DO:
-    // 1) Return the actual image through discord (text sufficient?)
-    // 2) Allow for multi-word input
-    // 3) Figure out which image to select of first few results
-    // 4) Allow bot to recognize conversation without prefix
-    //      e.g.) "I'd like flowers in the style of Monet"
-    //      e.g.) "I'd like Cactus in the style of Final Fantasy"
+    // 3) Parse which image they want and return a filter.
 
     // ARGS
     // [0]: search key term
@@ -19,12 +14,18 @@ exports.run = (client, config, message, args) => {
     let https = require('https');
     let subscriptionKey = config.BingSearchAPIsubscriptionKey;
 
+    // Used to recognize file formats of incoming images
+    let mime = require('mime-types')
+
     // Verify the endpoint URI.  At this writing, only one endpoint is used for Bing
     // search APIs.  In the future, regional endpoints may be available.  If you
     // encounter unexpected authorization errors, double-check this host against
     // the endpoint for your Bing Search instance in your Azure dashboard.
     let host = 'api.cognitive.microsoft.com';
     let path = '/bing/v7.0/images/search';
+
+    // Where to store user requests in progress
+    let requestStoragePath = './requests/'
 
     // Let user know command went in
     message.channel.send('Searching for args[0]: ' + args[0] + ' original art')
@@ -34,37 +35,74 @@ exports.run = (client, config, message, args) => {
     let response_handler = function (response) {
         let body = '';
         response.on('data', function (d) {
+            console.log('Handling response');
             body += d;
         });
         response.on('end', function () {
             // Store into JSON for easy access
             let results = JSON.parse(body);
             let numOfResults = args[1];
-            let imageUrl = [];
+            let imageResult = [];
             for (var i = 0; i < numOfResults; i++)
-                imageUrl[i] = results.value[i].contentUrl
+                imageResult.push(results["value"][i]);
 
+            console.log("Results:\n");
+            console.log(results);
+            console.log("imageResults:\n");
+            console.log(imageResult);
             // Send back to discord as text (for now)
+            console.log("sending results");
+            
+            //message.channel.send("Which picture would you like me to use as reference?");
+
+            var filesList = [];
             for (var i = 0; i < numOfResults; i++)
-                message.channel.send(imageUrl[i])
+                filesList.push(imageResult[i].contentUrl);
+            message.channel.send("Which picture would you like me to use as reference? Let me know if you like \"Picture 1\", \"Picture 2\", or \"Picture 3\"!", {files: filesList});
+            console.log(filesList);
+
+            /*
+            for (var i = 0; i < numOfResults; i++) {
+                let statici = i;
+                setTimeout(function(){
+                    // this code will only run when time has ellapsed
+                    message.channel.send("Picture " + (statici + 1) + ":", {files: [imageResult[statici].contentUrl]});
+                }, statici * 500);
+            }*/
 
             // Download to local
             var fs = require('fs'),
             request = require('request');
 
-            var download = function(uri, filename, callback){
-            request.head(uri, function(err, res, body){
-                console.log('content-type:', res.headers['content-type']);
-                console.log('content-length:', res.headers['content-length']);
+            // Create folder dedicated to user
+            var userId = message.member.user.id;
+            if (!fs.existsSync(requestStoragePath)){
+                fs.mkdirSync(requestStoragePath);
+            }
 
-                request(uri).pipe(fs.createWriteStream(filename)).on('close', callback);
-            });
+            if (!fs.existsSync(requestStoragePath + userId)){
+                fs.mkdirSync(requestStoragePath + userId);
+            }
+
+            var download = function(uri, filename, callback){
+                request.head(uri, function(err, res, body){
+                    console.log('content-type:', res.headers['content-type']);
+                    console.log('content-length:', res.headers['content-length']);
+
+                    request(uri).pipe(fs.createWriteStream(filename)).on('close', callback);
+                });
             };
 
-            let imageToDL = 0;
-            download(imageUrl[imageToDL], 'style_base.jpg', function(){
-            console.log('done');
-            });
+            var styleCandidatesToFileMap = {};
+            for (var i = 0; i < numOfResults; i++) {
+                var extension = imageResult[i].encodingFormat == "animatedgif" ? animatedgif : imageResult[i].encodingFormat;
+                var filename = "" + (i + 1) + '.' + extension;
+                download(imageResult[i].contentUrl, requestStoragePath + userId + '/' + filename, function(){
+                    console.log('Downloading image ' + i + ' done!');
+                });
+                styleCandidatesToFileMap[(i + 1)] = {url: imageResult[i].contentUrl, filename: filename};
+            }
+            fs.writeFileSync(requestStoragePath + userId + '/data.json', JSON.stringify(styleCandidatesToFileMap) , 'utf-8');
         });
 
         response.on('error', function (e) {
@@ -73,8 +111,8 @@ exports.run = (client, config, message, args) => {
     };
 
     let bing_image_search = function (search) {
-    console.log('Searching images for: ' + term);
-    let request_params = {
+        console.log('Searching images for: ' + term);
+        let request_params = {
             method : 'GET',
             hostname : host,
             path : path + '?q=' + encodeURIComponent(search),

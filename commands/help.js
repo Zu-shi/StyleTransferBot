@@ -1,8 +1,9 @@
 exports.run = (client, config, message, args) => {
+  console.log("Running help command");
   let userID = message.mentions.members.first().id;
   message.channel.send(userID)
-  // 471110404991614989 is styletransfer's ID
-  if (userID == 471110404991614989) {
+  // 471383832159846400 is styleselector's ID
+  if (userID == 471383832159846400) {
     message.channel.send({embed: {
       color: 3447003,
       author: {
