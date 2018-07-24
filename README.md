@@ -23,7 +23,7 @@ To use the bot, first mention the bot however it is called in your server (defau
 Examples:
 - `@styletransferbot please paint me some "maple leaves" in the style of "starry night"`
 - `@styletransferbot "cat" "gustav klimt"`
-- `@styletransferbot I would like "toast and eggs" to look like "yoshitaka amano"
+- `@styletransferbot I would like "toast and eggs" to look like "yoshitaka amano"`
 
 ## Terms of Use
 The result images of this bot should **not** be used for any commercial purposes. We have created this bot just for fun, not for profit or for other's profit.
