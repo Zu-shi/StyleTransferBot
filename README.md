@@ -1,5 +1,6 @@
 # StyleTransferBot
 Discord Bot to Perform Style Transfer on Custom Images
+*Last updated July 24, 2018*
 
 ## How to run
 To start this bot on a local server, do the following:
@@ -12,3 +13,6 @@ To start this bot on a local server, do the following:
 7. Now you should be able to use the bot in your server. Enjoy!
 
 *Note*: We will make these instructions nicer and more clear later...
+
+## Terms of Use
+The result images of this bot should **not** be used for any commercial purposes. We have created this bot just for fun, not for profit or for other's profit.
