@@ -18,7 +18,7 @@ To start this bot on a local server, do the following:
 ## How to Use (in Discord)
 `@styletransferbot help` lists the commands for the bot.
 
-To use the bot, first mention the bot however it is called in your server (default @styletransfer) and then type a sentence describing what you would like. Please order your sentence such that the object/subject of interest comes first, and the style comes later. Both the object/subject and style should be in parenthesis.
+To use the bot, first mention the bot however it is called in your server (default @styletransfer) and then type a sentence describing what you would like. Please order your sentence such that the object/subject of interest comes first, and the style comes later. **Both the subject and style should be in quotes (either single or double)**.
 
 Examples:
 - `@styletransferbot please paint me some "maple leaves" in the style of "starry night"`
