@@ -1,13 +1,9 @@
 exports.run = (client, config, message, args_full) => {
 
     // TO DO:
-    // 1) Return the actual image through discord (text sufficient?)
-    // 2) Allow for multi-word input
-    // 3) Figure out which image to select of first few results
-    // 4) Allow bot to recognize conversation without prefix
-    //      e.g.) "I'd like flowers in the style of Monet"
-    //      e.g.) "I'd like Cactus in the style of Final Fantasy"
-    // 5) Make numOfResults from input argument again (just an int), also imageToDL
+    // 1) Call shell script to run style transfer
+    // 2) Figure out which image to select of first few results (Zuoming)
+    // 3) Make numOfResults from input argument again (just an int), also imageToDL
 
     // ARGS (old)
     // [0]: search key term
@@ -74,10 +70,8 @@ exports.run = (client, config, message, args_full) => {
 
     // Let user know command went in
     message.channel.send('Searching for ' + args[0] + ' and ' + args[1] + ' original art');
-    let term_subject = args[0];
-    let term_style = args[1] + ' original art';
-
-    var isStyle = false;
+    var term_subject = args[0];
+    var term_style = args[1] + ' original art';
 
     // Get results in JSON format
     let response_handler = function (response) {
@@ -88,6 +82,7 @@ exports.run = (client, config, message, args_full) => {
         response.on('end', function () {
             // Store into JSON for easy access
             let results = JSON.parse(body);
+            let searchTerm = results.webSearchUrl;
             let numOfResults = 1;
             let imageUrl = [];
             for (var i = 0; i < numOfResults; i++)
@@ -108,12 +103,10 @@ exports.run = (client, config, message, args_full) => {
             };
 
             let imageToDL = 0;
-            if (isStyle == false) {
+            if (searchTerm.includes(term_subject) == true) {
                 var save_file = 'subject.jpg';
-                isStyle = true;
-            } else {
+            } else if (searchTerm.includes(term_style) == true) {
                 var save_file = 'style_base.jpg'
-                isStyle = false;
             }
             download(imageUrl[imageToDL], save_file, function(){
             console.log('done');
