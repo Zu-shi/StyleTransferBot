@@ -96,9 +96,9 @@ exports.run = (client, config, message, args_full) => {
             request = require('request');
 
             var download = function(uri, filename, callback){
-            request.head(uri, function(err, res, body){
-                request(uri).pipe(fs.createWriteStream(filename)).on('close', callback);
-            });
+                request.head(uri, function(err, res, body){
+                    request(uri).pipe(fs.createWriteStream(filename)).on('close', callback);
+                });
             };
 
             let imageToDL = 0;
@@ -109,7 +109,7 @@ exports.run = (client, config, message, args_full) => {
             }
             message.channel.send('downloading image: ' + Date.now())
             download(imageUrl[imageToDL], save_file, function(){
-            console.log('done');
+                console.log('done');
             });
 
             // if done downloading subject and then style
@@ -139,6 +139,8 @@ exports.run = (client, config, message, args_full) => {
 
     function andThenThis() {
         message.channel.send('andThenThis: ' + Date.now())
+        message.channel.send('Your picture should be done in a minute! (this is currently hardcoded)')
+
         // Lastly, run style transfer command in shell
         var isWin = process.platform === "win32";
         if (isWin == false) {
@@ -154,6 +156,7 @@ exports.run = (client, config, message, args_full) => {
             child.stderr.on('data', function (data) {   process.stdout.write(data.toString());  });
 
             child.on('close', function (code) { 
+                message.channel.send("I finished a " + term_style + " version of " + term_subject + "!", {files:["./tmp_userid/results.jpg"]});
                 console.log("Finished with code " + code);
             });
         }
