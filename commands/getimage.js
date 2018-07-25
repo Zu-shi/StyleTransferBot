@@ -131,31 +131,40 @@ exports.run = (client, config, message, args_full) => {
         req.end();
     }
 
-    if (subscriptionKey.length === 32) {
-        //bing_image_search(term_subject);
-        //bing_image_search(term_style);
-    } else {
-        console.log('Invalid Bing Search API subscription key!');
-        console.log('Please paste yours into the source code.');
+    // test sync/async
+    doThis(andThenThis)
+
+    function andThenThis() {
+        // Lastly, run style transfer command in shell
+        var isWin = process.platform === "win32";
+        if (isWin == false) {
+            var spawn = require('child_process').spawn;
+
+            //kick off process of listing files
+            //var child = spawn('python',['/home/azureuser/neural-style/neural-style/neural_style.py','--content','/home/azureuser/StyleTransferBot/subject.jpg','--styles','\"/home/azureuser/StyleTransferBot/style_base.jpg\"','--output','result.jpg','--iterations','500','--print-iterations','10','--overwrite','--maxwidth','500','--userid','a','--network','/home/azureuser/neural-style/neural-style/imagenet-vgg-verydeep-19.mat']);
+            var child = spawn('bash',['/home/azureuser/StyleTransferBot/run.bash']);
+            //spit stdout to screen
+            child.stdout.on('data', function (data) {   process.stdout.write(data.toString());  });
+
+            //spit stderr to screen
+            child.stderr.on('data', function (data) {   process.stdout.write(data.toString());  });
+
+            child.on('close', function (code) { 
+                console.log("Finished with code " + code);
+            });
+        }
     }
 
-    // Lastly, run style transfer command in shell
-    var isWin = process.platform === "win32";
-    if (isWin == false) {
-        var spawn = require('child_process').spawn;
+    function doThis(callback) {
+        if (subscriptionKey.length === 32) {
+            bing_image_search(term_subject);
+            bing_image_search(term_style);
+        } else {
+            console.log('Invalid Bing Search API subscription key!');
+            console.log('Please paste yours into the source code.');
+        }
 
-        //kick off process of listing files
-        //var child = spawn('python',['/home/azureuser/neural-style/neural-style/neural_style.py','--content','/home/azureuser/StyleTransferBot/subject.jpg','--styles','\"/home/azureuser/StyleTransferBot/style_base.jpg\"','--output','result.jpg','--iterations','500','--print-iterations','10','--overwrite','--maxwidth','500','--userid','a','--network','/home/azureuser/neural-style/neural-style/imagenet-vgg-verydeep-19.mat']);
-	var child = spawn('bash',['/home/azureuser/StyleTransferBot/run.bash']);
-        //spit stdout to screen
-        child.stdout.on('data', function (data) {   process.stdout.write(data.toString());  });
-
-        //spit stderr to screen
-        child.stderr.on('data', function (data) {   process.stdout.write(data.toString());  });
-
-        child.on('close', function (code) { 
-            console.log("Finished with code " + code);
-        });
+        callback()
     }
 
     return;
