@@ -1,5 +1,6 @@
 exports.run = (client, config, message, args_full) => {
 
+    let lockpath = "/home/azureuser/StyleTransferBot/requests/global.lock";
     // TO DO:
     // 1) Call shell script to run style transfer
     // 2) Figure out which image to select of first few results (Zuoming)
@@ -180,6 +181,13 @@ exports.run = (client, config, message, args_full) => {
             child.on('close', function (code) { 
                 message.channel.send("I finished a " + term_style + " version of " + term_subject + "!", {files:["./requests/"+userID+"/results.jpg"]});
                 console.log("Finished with code " + code);
+
+                try{
+                    console.log("deleting lock");
+                    fs.unlinkSync(lockpath);
+                }catch (e){
+                    console.log("Cannot write file ", e);
+                }
             });
         }
     }
@@ -195,6 +203,18 @@ exports.run = (client, config, message, args_full) => {
             message.channel.send("I have a project for you in progress, please wait until that one is done!");
             return;
         }
+    }
+
+    if (fs.existsSync(lockpath)) {
+        message.channel.send("I'm pretty busy right now, try me in a minute!");
+        return;
+    }
+
+    try{
+        console.log("creating lock");
+        fs.writeFileSync(lockpath, "");
+    }catch (e){
+        console.log("Cannot write file ", e);
     }
 
     message.channel.send('Searching for ' + args[0] + ' and ' + args[1] + ' original art');
