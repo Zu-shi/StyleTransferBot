@@ -158,6 +158,7 @@ exports.run = (client, config, message, args_full) => {
         var isWin = process.platform === "win32";
         if (isWin == false) {
             var spawn = require('child_process').spawn;
+	var userID = message.member.user.id;
 
             //kick off process of listing files
             //var child = spawn('python',['/home/azureuser/neural-style/neural-style/neural_style.py','--content','/home/azureuser/StyleTransferBot/subject.jpg','--styles','\"/home/azureuser/StyleTransferBot/style_base.jpg\"','--output','result.jpg','--iterations','500','--print-iterations','10','--overwrite','--maxwidth','500','--userid','a','--network','/home/azureuser/neural-style/neural-style/imagenet-vgg-verydeep-19.mat']);
@@ -169,7 +170,7 @@ exports.run = (client, config, message, args_full) => {
             child.stderr.on('data', function (data) {   process.stdout.write(data.toString());  });
 
             child.on('close', function (code) { 
-                message.channel.send("I finished a " + term_style + " version of " + term_subject + "!", {files:["./tmp_userid/results.jpg"]});
+                message.channel.send("I finished a " + term_style + " version of " + term_subject + "!", {files:["./requests/"+userID+"/results.jpg"]});
                 console.log("Finished with code " + code);
             });
         }
