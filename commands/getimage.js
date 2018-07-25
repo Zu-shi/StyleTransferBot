@@ -67,6 +67,9 @@ exports.run = (client, config, message, args_full) => {
     let host = 'api.cognitive.microsoft.com';
     let path = '/bing/v7.0/images/search';
 
+    // Where to store user requests in progress
+    let requestStoragePath = './requests/'
+
     // Let user know command went in
     message.channel.send('Searching for ' + args[0] + ' and ' + args[1] + ' original art');
     var term_subject = args[0];
@@ -102,10 +105,20 @@ exports.run = (client, config, message, args_full) => {
             };
 
             let imageToDL = 0;
+            // Create folder dedicated to user
+            var userID = message.member.user.id;
+            if (!fs.existsSync(requestStoragePath)){
+                fs.mkdirSync(requestStoragePath);
+            }
+
+            if (!fs.existsSync(requestStoragePath + userID)){
+                fs.mkdirSync(requestStoragePath + userID);
+            }
+
             if (searchTerm.includes(term_subject) == true) {
-                var save_file = 'subject.jpg';
+                var save_file = (requestStoragePath + userID + '/subject.jpg');
             } else if (searchTerm.includes(term_style) == true) {
-                var save_file = 'style_base.jpg'
+                var save_file = (requestStoragePath + userID + '/style_base.jpg');
             }
             message.channel.send('downloading image: ' + Date.now())
             download(imageUrl[imageToDL], save_file, function(){
@@ -148,7 +161,7 @@ exports.run = (client, config, message, args_full) => {
 
             //kick off process of listing files
             //var child = spawn('python',['/home/azureuser/neural-style/neural-style/neural_style.py','--content','/home/azureuser/StyleTransferBot/subject.jpg','--styles','\"/home/azureuser/StyleTransferBot/style_base.jpg\"','--output','result.jpg','--iterations','500','--print-iterations','10','--overwrite','--maxwidth','500','--userid','a','--network','/home/azureuser/neural-style/neural-style/imagenet-vgg-verydeep-19.mat']);
-            var child = spawn('bash',['/home/azureuser/StyleTransferBot/run.bash']);
+            var child = spawn('bash',['/home/azureuser/StyleTransferBot/run_user.bash', userID]);
             //spit stdout to screen
             child.stdout.on('data', function (data) {   process.stdout.write(data.toString());  });
 
@@ -168,7 +181,7 @@ exports.run = (client, config, message, args_full) => {
         //bing_image_search(term_style);
 
         bing_image_search(term_subject, function(){
-            console.log('subject.jpg downlaoded');
+            console.log('subject.jpg downloaded');
         });
         
         bing_image_search(term_style, function(){
