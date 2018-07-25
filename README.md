@@ -1,17 +1,19 @@
 # StyleTransferBot
 Discord Bot to Perform Style Transfer on Custom Images
 
-*Last updated July 24, 2018*
+*Last updated July 25, 2018*
 
 ## How to Run (Server)
 To start this bot on a local server, do the following:
 1. Make sure you have Node.js installed
 2. Make sure you have installed Discord.js through `npm install discord.js`
 3. Run `npm install request` to be able to download images
-4. Create your config.json file
-5. Make sure your bot is in the server (and invite if they aren't in already)
-6. Open a terminal and run `node index.js`
-7. Now you should be able to use the bot in your server. Enjoy!
+4. Git clone this [art style transfer repository](https://github.com/anishathalye/neural-style)
+5. Change the paths in run_user.bash
+6. Create your config.json file
+7. Make sure your bot is in the server (and invite if they aren't in already)
+8. Open a terminal and run `node index.js`
+9. Now you should be able to use the bot in your server. Enjoy!
 
 *Note*: We will make these instructions nicer and more clear later...
 
