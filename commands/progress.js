@@ -1,6 +1,6 @@
 exports.run = (client, config, message, args) => {
   var fs = require("fs");
-  var contents = fs.readFileSync("/home/azureuser/neural-style/amy/progress.json", {"encoding": "utf-8"});
+  var contents = fs.readFileSync("/home/azureuser/StyleTransferBot/tmp_userid/progress.json", {"encoding": "utf-8"});
   var data = JSON.parse(contents);
   if (data.time_remaining == 0) {
     message.channel.send("All done!");
