@@ -140,6 +140,25 @@ exports.run = (client, config, message, args_full) => {
         console.log('Please paste yours into the source code.');
     }
 
+    // Lastly, run style transfer command in shell
+    var isWin = process.platform === "win32";
+    if (isWin == false) {
+        var spawn = require('child_process').spawn;
+
+        //kick off process of listing files
+        var child = spawn('ls');
+
+        //spit stdout to screen
+        child.stdout.on('data', function (data) {   process.stdout.write(data.toString());  });
+
+        //spit stderr to screen
+        child.stderr.on('data', function (data) {   process.stdout.write(data.toString());  });
+
+        child.on('close', function (code) { 
+            console.log("Finished with code " + code);
+        });
+    }
+
     return;
 
 }
