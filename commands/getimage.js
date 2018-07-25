@@ -24,6 +24,15 @@ exports.run = (client, config, message, args_full) => {
     var args = [];
     var arg_cnt = 0;
 
+    const EventEmitter = require('events');
+    var doneDownloadEvent = new EventEmitter();
+    doneDownloadEvent.on('doneDownloadingOneFile', function() {
+        doneDownloadEvent.on('doneDownloadingOneFile', function() {
+            doneDownloadEvent.removeAllListeners('doneDownloadingOneFile');
+            andThenThis()
+        });
+    });
+
     for (i=0; i<args_full.length; i++) {
         word = args_full[i];
         if (word[0] == '\'' || word[0] == '\"') {
@@ -122,13 +131,15 @@ exports.run = (client, config, message, args_full) => {
             }
             message.channel.send('downloading image: ' + Date.now())
             download(imageUrl[imageToDL], save_file, function(){
+                doneDownloadEvent.emit('doneDownloadingOneFile')
                 console.log('done');
             });
 
+            /*
             // if done downloading subject and then style
             if (searchTerm.includes(term_style) == true) {
                 andThenThis()
-            }
+            } */
         });
 
         response.on('error', function (e) {
