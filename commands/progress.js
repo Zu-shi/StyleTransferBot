@@ -1,9 +1,8 @@
 exports.run = (client, config, message, args) => {
   var fs = require("fs");
-  var path = require('path'); 
   
   var progressFile = "/home/azureuser/StyleTransferBot/requests/"+message.member.user.id+"/progress.json";
-  if (path.existsSync(progressFile)) {
+  if (fs.existsSync(progressFile)) {
       var contents = fs.readFileSync(progressFile, {"encoding": "utf-8"});
       var data = JSON.parse(contents);
       if (data.time_remaining == 0) {
