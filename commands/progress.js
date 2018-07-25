@@ -1,12 +1,20 @@
 exports.run = (client, config, message, args) => {
   var fs = require("fs");
-  var contents = fs.readFileSync("/home/azureuser/StyleTransferBot/requests/"+message.member.user.id+"/progress.json", {"encoding": "utf-8"});
-  var data = JSON.parse(contents);
-  if (data.time_remaining == 0) {
-    message.channel.send("All done!");
+  var path = require('path'); 
+  
+  var progressFile = "/home/azureuser/StyleTransferBot/requests/"+message.member.user.id+"/progress.json";
+  if (path.existsSync(progressFile)) {
+      var contents = fs.readFileSync(progressFile, {"encoding": "utf-8"});
+      var data = JSON.parse(contents);
+      if (data.time_remaining == 0) {
+        message.channel.send("All done!");
+      }
+      else {
+        message.channel.send(hms(data.time_remaining) + " left :grin:");
+      }
   }
   else {
-    message.channel.send(hms(data.time_remaining) + " left :grin:");
+      message.channel.send("No requests ever ran");
   }
 }
 
