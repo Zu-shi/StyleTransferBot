@@ -36,7 +36,6 @@ exports.run = (client, config, message, args_full) => {
                 args[arg_cnt] = word.substr(1); // take off first character (quote)
                 startQuote = true;
             }
-            
         } else if (word[word.length-1] == '\'' || word[word.length-1] == '\"') {
             // ends in quote, close
             args[arg_cnt] = args[arg_cnt] + ' ' + word.substr(0,word.length-1);
@@ -133,8 +132,8 @@ exports.run = (client, config, message, args_full) => {
     }
 
     if (subscriptionKey.length === 32) {
-        bing_image_search(term_subject);
-        bing_image_search(term_style);
+        //bing_image_search(term_subject);
+        //bing_image_search(term_style);
     } else {
         console.log('Invalid Bing Search API subscription key!');
         console.log('Please paste yours into the source code.');
@@ -146,8 +145,8 @@ exports.run = (client, config, message, args_full) => {
         var spawn = require('child_process').spawn;
 
         //kick off process of listing files
-        var child = spawn('ls');
-
+        //var child = spawn('python',['/home/azureuser/neural-style/neural-style/neural_style.py','--content','/home/azureuser/StyleTransferBot/subject.jpg','--styles','\"/home/azureuser/StyleTransferBot/style_base.jpg\"','--output','result.jpg','--iterations','500','--print-iterations','10','--overwrite','--maxwidth','500','--userid','a','--network','/home/azureuser/neural-style/neural-style/imagenet-vgg-verydeep-19.mat']);
+	var child = spawn('bash',['/home/azureuser/StyleTransferBot/run.bash']);
         //spit stdout to screen
         child.stdout.on('data', function (data) {   process.stdout.write(data.toString());  });
 
