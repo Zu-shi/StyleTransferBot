@@ -42,7 +42,14 @@ client.on("message", message => {
       if (message.content.trim().split(/ +/g)[1] == 'help') {
         let commandFile = require(`./commands/help.js`);
         commandFile.run(client, config, message, args);
-      } else {
+      }
+      // Progress Command
+      else if (message.content.trim().split(/ +/g)[1] == 'progress') {
+        let commandFile = require(`./commands/progress.js`);
+        commandFile.run(client, config, message, args);
+      }
+      // Get Image Command (Style Transfer)
+      else {
         let commandFile = require(`./commands/getimage.js`);
         commandFile.run(client, config, message, args);
       }
