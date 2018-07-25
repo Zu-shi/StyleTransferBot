@@ -80,9 +80,7 @@ exports.run = (client, config, message, args_full) => {
     let requestStoragePath = './requests/'
 
     // Let user know command went in
-    message.channel.send('Searching for ' + args[0] + ' and ' + args[1] + ' original art');
-    var term_subject = args[0];
-    var term_style = args[1] + ' original art';
+    var fs = require('fs');
 
     // Get results in JSON format
     let response_handler = function (response) {
@@ -104,7 +102,6 @@ exports.run = (client, config, message, args_full) => {
                 message.channel.send(imageUrl[i])
 
             // Download to local
-            var fs = require('fs'),
             request = require('request');
 
             var download = function(uri, filename, callback){
@@ -148,7 +145,7 @@ exports.run = (client, config, message, args_full) => {
     };
 
     let bing_image_search = function (search) {
-    let request_params = {
+        let request_params = {
             method : 'GET',
             hostname : host,
             path : path + '?q=' + encodeURIComponent(search),
@@ -169,7 +166,7 @@ exports.run = (client, config, message, args_full) => {
         var isWin = process.platform === "win32";
         if (isWin == false) {
             var spawn = require('child_process').spawn;
-	var userID = message.member.user.id;
+            var userID = message.member.user.id;
 
             //kick off process of listing files
             //var child = spawn('python',['/home/azureuser/neural-style/neural-style/neural_style.py','--content','/home/azureuser/StyleTransferBot/subject.jpg','--styles','\"/home/azureuser/StyleTransferBot/style_base.jpg\"','--output','result.jpg','--iterations','500','--print-iterations','10','--overwrite','--maxwidth','500','--userid','a','--network','/home/azureuser/neural-style/neural-style/imagenet-vgg-verydeep-19.mat']);
@@ -186,8 +183,41 @@ exports.run = (client, config, message, args_full) => {
             });
         }
     }
+    
 
-    message.channel.send('doThis: ' + Date.now())
+    var filepath = "/home/azureuser/StyleTransferBot/requests/"+message.member.user.id+"/progress.json";
+    var dirPath = "/home/azureuser/StyleTransferBot/requests/"+message.member.user.id;
+    if (fs.existsSync(filepath)) {
+        var progressPath = fs.readFileSync(filepath, {"encoding": "utf-8"});
+        var progress = JSON.parse(progressPath);
+
+        if (progress.time_remaining != 0) {
+            message.channel.send("I have a project for you in progress, please wait until that one is done!");
+            return;
+        }
+    }
+
+    message.channel.send('Searching for ' + args[0] + ' and ' + args[1] + ' original art');
+    var term_subject = args[0];
+    var term_style = args[1] + ' original art';
+
+    var deleteFolderRecursive = function(path) {
+      if (fs.existsSync(path)) {
+        fs.readdirSync(path).forEach(function(file, index){
+          var curPath = path + "/" + file;
+          if (fs.lstatSync(curPath).isDirectory()) { // recurse
+            deleteFolderRecursive(curPath);
+          } else { // delete file
+            fs.unlinkSync(curPath);
+          }
+        });
+        fs.rmdirSync(path);
+      }
+    };
+
+    deleteFolderRecursive(dirPath);
+
+    //message.channel.send('doThis: ' + Date.now())
     if (subscriptionKey.length === 32) {
         //bing_image_search(term_subject);
         //bing_image_search(term_style);
@@ -203,8 +233,5 @@ exports.run = (client, config, message, args_full) => {
         console.log('Invalid Bing Search API subscription key!');
         console.log('Please paste yours into the source code.');
     }
-    
-
     return;
-
 }
