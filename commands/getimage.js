@@ -131,9 +131,6 @@ exports.run = (client, config, message, args_full) => {
         req.end();
     }
 
-    // test sync/async
-    doThis(andThenThis)
-
     function andThenThis() {
         // Lastly, run style transfer command in shell
         var isWin = process.platform === "win32";
@@ -166,6 +163,9 @@ exports.run = (client, config, message, args_full) => {
 
         callback()
     }
+
+    // test sync/async
+    doThis(andThenThis)
 
     return;
 
