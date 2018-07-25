@@ -107,9 +107,15 @@ exports.run = (client, config, message, args_full) => {
             } else if (searchTerm.includes(term_style) == true) {
                 var save_file = 'style_base.jpg'
             }
+            message.channel.send('downloading image: ' + Date.now())
             download(imageUrl[imageToDL], save_file, function(){
             console.log('done');
             });
+
+            // if done downloading subject and then style
+            if (searchTerm.includes(term_style) == true) {
+                andThenThis()
+            }
         });
 
         response.on('error', function (e) {
@@ -153,22 +159,23 @@ exports.run = (client, config, message, args_full) => {
         }
     }
 
-    function doThis(callback) {
-        message.channel.send('doThis: ' + Date.now())
-        if (subscriptionKey.length === 32) {
-            bing_image_search(term_subject);
-            bing_image_search(term_style);
-        } else {
-            console.log('Invalid Bing Search API subscription key!');
-            console.log('Please paste yours into the source code.');
-        }
+    message.channel.send('doThis: ' + Date.now())
+    if (subscriptionKey.length === 32) {
+        //bing_image_search(term_subject);
+        //bing_image_search(term_style);
 
-        callback()
+        bing_image_search(term_subject, function(){
+            console.log('subject.jpg downlaoded');
+        });
+        
+        bing_image_search(term_style, function(){
+            console.log('style_base.jpg downloaded')
+        });
+    } else {
+        console.log('Invalid Bing Search API subscription key!');
+        console.log('Please paste yours into the source code.');
     }
-
-    // test sync/async
-    message.channel.send('doThis(andThenThis): ' + Date.now())
-    doThis(andThenThis)
+    
 
     return;
 
