@@ -132,6 +132,7 @@ exports.run = (client, config, message, args_full) => {
     }
 
     function andThenThis() {
+        message.channel.send('andThenThis: ' + Date.now())
         // Lastly, run style transfer command in shell
         var isWin = process.platform === "win32";
         if (isWin == false) {
@@ -153,6 +154,7 @@ exports.run = (client, config, message, args_full) => {
     }
 
     function doThis(callback) {
+        message.channel.send('doThis: ' + Date.now())
         if (subscriptionKey.length === 32) {
             bing_image_search(term_subject);
             bing_image_search(term_style);
@@ -165,6 +167,7 @@ exports.run = (client, config, message, args_full) => {
     }
 
     // test sync/async
+    message.channel.send('doThis(andThenThis): ' + Date.now())
     doThis(andThenThis)
 
     return;
