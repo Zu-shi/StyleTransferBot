@@ -1,7 +1,9 @@
 # StyleTransferBot
 Discord Bot to Perform Style Transfer on Custom Images
 
-*Last updated July 25, 2018*
+*Last updated July 26, 2018*
+
+![bot icon](images/bot_icon.png "Style Transfer Bot")
 
 ## How to Run (Server)
 To start this bot on a local server, do the following:
@@ -26,6 +28,8 @@ Examples:
 - `@styletransferbot please paint me some "maple leaves" in the style of "starry night"`
 - `@styletransferbot "cat" "gustav klimt"`
 - `@styletransferbot I would like "toast and eggs" to look like "yoshitaka amano"`
+
+To check progress on your request, type `@styletransferbot progress`
 
 ## Terms of Use
 The result images of this bot should **not** be used for any commercial purposes. We have created this bot just for fun, not for profit or for other's profit.

@@ -100,7 +100,7 @@ exports.run = (client, config, message, args_full) => {
 
             // Send back to discord as text (for now)
             for (var i = 0; i < numOfResults; i++)
-                message.channel.send(imageUrl[i])
+                message.channel.send('',{file:imageUrl[i]})
 
             // Download to local
             request = require('request');
@@ -127,7 +127,7 @@ exports.run = (client, config, message, args_full) => {
             } else if (searchTerm.includes(term_style) == true) {
                 var save_file = (requestStoragePath + userID + '/style_base.jpg');
             }
-            message.channel.send('downloading image: ' + Date.now())
+            //message.channel.send('downloading image: ' + Date.now())
             download(imageUrl[imageToDL], save_file, function(){
                 doneDownloadEvent.emit('doneDownloadingOneFile')
                 console.log('done');
@@ -160,8 +160,8 @@ exports.run = (client, config, message, args_full) => {
     }
 
     function andThenThis() {
-        message.channel.send('andThenThis: ' + Date.now())
-        message.channel.send('Your picture should be done in a minute! (this is currently hardcoded)')
+        //message.channel.send('andThenThis: ' + Date.now())
+        message.channel.send('@ me to check progress! (@styletransfer progress)')
 
         // Lastly, run style transfer command in shell
         var isWin = process.platform === "win32";
@@ -179,7 +179,7 @@ exports.run = (client, config, message, args_full) => {
             child.stderr.on('data', function (data) {   process.stdout.write(data.toString());  });
 
             child.on('close', function (code) { 
-                message.channel.send("I finished a " + term_style + " version of " + term_subject + "!", {files:["./requests/"+userID+"/results.jpg"]});
+                message.channel.send("I finished a " + term_subject + " in the style of " + term_style + "!", {files:["./requests/"+userID+"/results.jpg"]});
                 console.log("Finished with code " + code);
 
                 try{
