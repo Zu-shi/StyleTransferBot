@@ -184,8 +184,7 @@ exports.run = (client, config, message, args_full) => {
 
                 try{
                     console.log("deleting lock");
-                    client.user.setStatus('online');
-                    //client.user.setActivity({game: {name: "", type: 0}});
+                    client.user.setPresence({game: null, status: 'online' });
                     fs.unlinkSync(lockpath);
                 }catch (e){
                     console.log("Cannot write file ", e);
@@ -208,14 +207,13 @@ exports.run = (client, config, message, args_full) => {
     }
 
     if (fs.existsSync(lockpath)) {
-        message.channel.send("I'm pretty busy right now, try me in a minute!");
+        message.channel.send("I'm away right now, try me in a minute or when you see me online!");
         return;
     }
 
     try{
         console.log("creating lock");
-        client.user.setStatus('dnd');
-        //client.user.setActivity({game: {name: "with style", type: 0}});
+        client.user.setPresence({ game: { name: 'with style' }, status: 'idle' });
         fs.writeFileSync(lockpath, "");
     }catch (e){
         console.log("Cannot write file ", e);
