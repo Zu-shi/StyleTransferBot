@@ -184,6 +184,8 @@ exports.run = (client, config, message, args_full) => {
 
                 try{
                     console.log("deleting lock");
+                    client.user.setStatus('online');
+                    //client.user.setActivity({game: {name: "", type: 0}});
                     fs.unlinkSync(lockpath);
                 }catch (e){
                     console.log("Cannot write file ", e);
@@ -212,14 +214,16 @@ exports.run = (client, config, message, args_full) => {
 
     try{
         console.log("creating lock");
+        client.user.setStatus('dnd');
+        //client.user.setActivity({game: {name: "with style", type: 0}});
         fs.writeFileSync(lockpath, "");
     }catch (e){
         console.log("Cannot write file ", e);
     }
 
-    message.channel.send('Searching for ' + args[0] + ' and ' + args[1] + ' original art');
     var term_subject = args[0];
-    var term_style = args[1] + ' original art';
+    var term_style = args[1];
+    message.channel.send('Searching for ' + term_subject + ' and ' + term_style);
 
     var deleteFolderRecursive = function(path) {
       if (fs.existsSync(path)) {
@@ -241,7 +245,6 @@ exports.run = (client, config, message, args_full) => {
     if (subscriptionKey.length === 32) {
         //bing_image_search(term_subject);
         //bing_image_search(term_style);
-
         bing_image_search(term_subject, function(){
             console.log('subject.jpg downloaded');
         });
