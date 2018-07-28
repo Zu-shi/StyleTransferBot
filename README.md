@@ -5,6 +5,9 @@ Discord Bot to Perform Style Transfer on Custom Images
 
 ![bot icon](images/bot_icon.png "Style Transfer Bot")
 
+## Disclamer
+This repo is under active development, some features may only be partially complete.
+
 ## How to Run (Server)
 To start this bot on a local server, do the following:
 1. Make sure you have Node.js installed
